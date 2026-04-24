@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "cmpt-detail": "/cmpts/biz/detail/detail_cmpt"
+  },
+  "navigationBarTitleText": "心情详情"
+}

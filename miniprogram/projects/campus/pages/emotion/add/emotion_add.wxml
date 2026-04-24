@@ -1,0 +1,26 @@
+<view wx:if="{{!isLoad}}" class="margin-top load loading text-l text-grey"></view>
+<view class="main" wx:if="{{isLoad}}">
+
+	<view class="section">
+		<text class="title">分享心情</text>
+		<text class="desc">在这里分享你的心情，获得大家的支持和鼓励</text>
+	</view>
+
+	<view class="form-section">
+		<view class="form-item">
+			<text class="label">匿名发布</text>
+			<switch bindchange="bindAnonymousChange" checked="{{anonymous}}" />
+		</view>
+
+		<view class="debug">
+			<text>Fields count: {{fields.length}}</text>
+			<text wx:for="{{fields}}" wx:key="mark">
+				{{item.mark}} - {{item.title}}
+			</text>
+		</view>
+
+		<cmpt-form-show id="cmpt-form" mark="cmpt-form" isCacheMatch="{{false}}" fields="{{fields}}" forms="{{formForms}}" isDefMatch="{{false}}" isUpload="{{true}}"></cmpt-form-show>
+	</view>
+
+	<button bindtap="bindFormSubmit" class="btn-base btn-project">发布心情</button>
+</view>

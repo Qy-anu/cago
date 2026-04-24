@@ -1,0 +1,75 @@
+<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l load-project"></view>
+<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l load-project"></view>
+
+<block wx:if="{{isLoad}}">
+	<view class="container">
+		<view class="article card-project shadow-project">
+			<view class="user-info">
+				<image class="avatar" mode="aspectFill" src="{{board.user.USER_PIC||'../../../images/default-avatar.png'}}"></image>
+				<view class="user-meta">
+					<view class="user-name">{{board.user.USER_NAME||'匿名用户'}}</view>
+					<view class="time-row">{{board.BOARD_ADD_TIME}}</view>
+				</view>
+				<view wx:if="{{isLogin && board.BOARD_USER_ID != nowUserId}}" class="chat-btn" bindtap="bindChatTap" data-user-id="{{board.BOARD_USER_ID}}" data-user-name="{{board.user.USER_NAME}}" data-source-type="board" data-source-id="{{board._id}}" data-source-title="{{board.BOARD_OBJ.to || '心情详情'}}">私聊</view>
+			</view>
+
+			<view class="main-content">
+				<view class="board-line board-to" wx:if="{{board.BOARD_OBJ.to}}">TO: {{board.BOARD_OBJ.to}}</view>
+				<view class="board-line board-desc" wx:if="{{board.BOARD_OBJ.desc}}">{{board.BOARD_OBJ.desc}}</view>
+				<view class="pic-list" wx:if="{{board.BOARD_OBJ.pic && board.BOARD_OBJ.pic.length}}">
+					<image wx:for="{{board.BOARD_OBJ.pic}}" wx:key="key" wx:for-item="itm" bindtap="url" data-type="img" data-url="{{itm}}" src="{{itm}}" mode="aspectFill" class="pic"></image>
+				</view>
+				<view class="board-from" wx:if="{{board.BOARD_OBJ.from}}">From: {{board.BOARD_OBJ.from}}</view>
+			</view>
+
+			<view class="stats">
+				<view class="stat-item"><text class="icon-attention"></text><text>{{board.BOARD_VIEW_CNT}}</text></view>
+				<view class="stat-item"><text class="icon-appreciate"></text><text>{{board.BOARD_LIKE_CNT}}</text></view>
+				<view class="stat-item comment-entry" bindtap="bindCommentFocus"><text class="icon-comment"></text><text>{{board.BOARD_COMMENT_CNT}}</text></view>
+				<view class="stat-item"><text class="icon-favor"></text><text>{{board.BOARD_FAV_CNT}}</text></view>
+			</view>
+		</view>
+
+		<view class="comment-section">
+			<view class="comment-title">全部评论（{{board.BOARD_COMMENT_CNT||0}}）</view>
+			<view wx:if="{{!commentList.length}}" class="comment-empty">暂无评论，快来抢沙发~</view>
+			<view wx:else class="comment-list">
+				<view class="comment-item" wx:for="{{commentList}}" wx:key="_id">
+					<image class="comment-avatar" mode="aspectFill" src="{{item.user.USER_PIC||'../../../images/default-avatar.png'}}"></image>
+					<view class="comment-body">
+						<view class="comment-head">
+							<text class="comment-user">{{item.user.USER_NAME}}</text>
+							<text class="comment-time">{{item.COMMENT_ADD_TIME}}</text>
+						</view>
+						<view wx:if="{{item.COMMENT_OBJ.content}}" class="comment-text">{{item.COMMENT_OBJ.content}}</view>
+						<view class="comment-image-list" wx:if="{{item.COMMENT_OBJ.img && item.COMMENT_OBJ.img.length}}">
+							<image wx:for="{{item.COMMENT_OBJ.img}}" wx:key="key" wx:for-item="img" bindtap="url" data-type="img" data-url="{{img}}" class="comment-image" src="{{img}}" mode="aspectFill"></image>
+						</view>
+						<view class="comment-oprt">
+							<view class="comment-like" bindtap="bindCommentLikeTap" data-id="{{item._id}}" data-idx="{{index}}"><text class="icon-appreciate{{item.like?'fill':''}}"></text><text>{{item.COMMENT_LIKE_CNT}}</text></view>
+							<view wx:if="{{isLogin && item.COMMENT_USER_ID == nowUserId}}" bindtap="bindCommentDelTap" data-id="{{item._id}}" class="comment-del">删除</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<cmpt-detail mode="mode1" topBtnShow="{{topBtnShow}}" oid="{{board._id}}" type="board" cate="{{board.BOARD_CATE_NAME}}" title="{{board.BOARD_OBJ.to || '心情详情'}}" cover="{{board.BOARD_OBJ.pic[0]||board.BOARD_OBJ.cover[0]||'/projects/campus/images/poster/board.png'}}" qr="{{board.BOARD_QR}}" desc="查看详情" bg="{{skin.PROJECT_COLOR}}" doHome="{{false}}">
+		<view class="inline-comment-wrap">
+			<view class="comment-toolbar">
+				<view class="comment-image-picker" bindtap="bindChooseCommentImage"><text class="icon-pic"></text></view>
+				<input class="inline-comment-input" placeholder="发言要友善" value="{{commentContent}}" bindinput="bindCommentInput" bindfocus="bindCommentFocus" focus="{{commentFocus}}" confirm-type="send" bindconfirm="bindCommentSubmit" />
+				<view class="inline-comment-send {{(!commentContent && !commentImages.length)||isCommentSubmitting?'disabled':''}}" bindtap="bindCommentSubmit">发送</view>
+			</view>
+			<scroll-view wx:if="{{commentImages.length}}" class="comment-image-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+				<view class="comment-image-preview-list">
+					<view class="comment-image-preview-item" wx:for="{{commentImages}}" wx:key="key">
+						<image class="comment-image-preview" src="{{item}}" mode="aspectFill"></image>
+						<view class="comment-image-remove" bindtap="bindRemoveCommentImage" data-idx="{{index}}">×</view>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+	</cmpt-detail>
+</block>

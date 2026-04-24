@@ -1,0 +1,33 @@
+<view id="scroll-area" class="chat-container">
+  <view wx:if="{{sourceType && sourceId}}" class="source-bar">
+    <text class="source-text">来自：{{sourceTitle || '未知帖子'}}</text>
+    <text class="source-link" bindtap="bindViewSourceTap">查看原帖</text>
+  </view>
+
+  <view wx:if="{{!isLoad}}" class="chat-loading">加载中...</view>
+
+  <view wx:elif="{{list.length==0}}" class="data-null">
+    <view class="chat-empty">暂无消息，发送第一条消息吧</view>
+  </view>
+
+  <view wx:else class="message-list">
+    <view wx:for="{{list}}" wx:key="_id" class="message-item {{item.isMy?'right':'left'}}">
+      <image class="avatar" src="{{item.isMy?'/images/anonymous.png':'/images/anonymous.png'}}" mode="aspectFill"></image>
+      <view class="bubble">
+        <text wx:if="{{item.CHAT_TYPE=='text'}}" class="text">{{item.CHAT_CONTENT}}</text>
+        <image wx:elif="{{item.CHAT_TYPE=='image'}}" class="image" src="{{item.CHAT_CONTENT}}" mode="aspectFit"></image>
+        <text class="time">{{item.CHAT_ADD_TIME}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="input-area">
+    <view class="input-container">
+      <view class="comment-toolbar-btn" bindtap="bindChooseImage">
+        <text class="icon-pic"></text>
+      </view>
+      <input class="input" placeholder="输入消息..." value="{{content}}" bindinput="bindContentInput" confirm-type="send" bindconfirm="bindSend"></input>
+    </view>
+    <button class="send-btn" bindtap="bindSend" disabled="{{isSending}}">发送</button>
+  </view>
+</view>

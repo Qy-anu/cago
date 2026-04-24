@@ -1,0 +1,111 @@
+<view wx:if="{{isLoad===null}}" class="margin-top load notexist text-l load-project"></view>
+<view wx:if="{{isLoad===false}}" class="margin-top load loading text-l load-project"></view>
+
+<block wx:if="{{isLoad}}">
+	<view class="container">
+		<view class="header">
+			<view class="user-info">
+				<block wx:if="{{job.user.USER_PIC}}">
+					<image class="avatar" src="{{job.user.USER_PIC}}"></image>
+				</block>
+				<view wx:else class="avatar" style="display:flex;align-items:center;justify-content:center;background:#eef1ff;color:#7a84ff;font-size:28rpx;">{{jobAvatarText}}</view>
+				<view class="user-details">
+					<text class="username">{{job.user.USER_NAME}}</text>
+					<text class="time">{{job.JOB_ADD_TIME}}</text>
+				</view>
+				<view wx:if="{{isLogin && job.JOB_USER_ID != nowUserId}}" class="chat-btn" bindtap="bindChatTap" data-user-id="{{job.JOB_USER_ID}}" data-user-name="{{job.user.USER_NAME}}" data-source-type="job" data-source-id="{{job._id}}" data-source-title="{{job.JOB_OBJ.title}}">私聊</view>
+			</view>
+		</view>
+
+		<view class="content">
+			<view class="status-badge">
+				<text wx:if="{{job.JOB_STATUS==1}}" class="badge bg-green light">进行中</text>
+				<text wx:elif="{{job.JOB_STATUS==0}}" class="badge bg-grey light">已结束</text>
+			</view>
+			<view class="title">{{job.JOB_OBJ.title}}</view>
+			<view wx:if="{{job.JOB_OBJ.desc}}" class="text">{{job.JOB_OBJ.desc}}</view>
+			
+			<view class="pic-list" wx:if="{{job.JOB_OBJ.pic && job.JOB_OBJ.pic.length}}">
+				<image wx:for="{{job.JOB_OBJ.pic}}" wx:key="key" bindtap="url" data-type="img" data-url="{{item}}" class="pic" src="{{item}}"></image>
+			</view>
+			<view class="pic-list" wx:else>
+				<view class="pic" style="display:flex;align-items:center;justify-content:center;background:#f5f6fa;color:#c0c4cc;font-size:26rpx;">暂无图片</view>
+			</view>
+		</view>
+
+		<view class="stats">
+			<view class="stat-item">
+				<text class="icon-attention"></text>
+				<text>{{job.JOB_VIEW_CNT}}</text>
+			</view>
+			<view class="stat-item" bindtap="bindLikeTap">
+				<text class="icon-appreciate{{job.like?'fill':''}}"></text>
+				<text>{{job.JOB_LIKE_CNT}}</text>
+			</view>
+			<view class="stat-item comment-entry" bindtap="bindCommentFocus">
+				<text class="icon-comment"></text>
+				<text>{{job.JOB_COMMENT_CNT}}</text>
+			</view>
+		</view>
+
+		<view class="comment-section" id="comment-section">
+			<view class="comment-title">全部评论（{{job.JOB_COMMENT_CNT||0}}）</view>
+			<view wx:if="{{!commentList.length}}" class="comment-empty">暂无评论，快来抢沙发~</view>
+			<view class="comment-list" wx:else>
+				<view class="comment-item" wx:for="{{commentList}}" wx:key="_id">
+					<view class="comment-left">
+						<block wx:if="{{item.user.USER_PIC}}">
+							<image class="comment-avatar" mode="aspectFill" src="{{item.user.USER_PIC}}"></image>
+						</block>
+						<view wx:else class="comment-avatar" style="display:flex;align-items:center;justify-content:center;background:#eef1ff;color:#7a84ff;font-size:24rpx;">{{item.avatarText}}</view>
+					</view>
+					<view class="comment-right">
+						<view class="comment-line1">
+							<text class="comment-user">{{item.user.USER_NAME}}</text>
+							<text class="comment-time">{{item.COMMENT_ADD_TIME}}</text>
+						</view>
+						<view wx:if="{{item.COMMENT_OBJ.content}}" class="comment-content">{{item.COMMENT_OBJ.content}}</view>
+						<view class="comment-image-list" wx:if="{{item.COMMENT_OBJ.img && item.COMMENT_OBJ.img.length}}">
+							<image wx:for="{{item.COMMENT_OBJ.img}}" wx:key="key" wx:for-item="img" bindtap="url" data-type="img" data-url="{{img}}" class="comment-image" src="{{img}}" mode="aspectFill"></image>
+						</view>
+						<view class="comment-oprt">
+							<view class="comment-like" bindtap="bindCommentLikeTap" data-id="{{item._id}}" data-idx="{{index}}">
+								<text class="icon-appreciate{{item.like?'fill':''}}"></text>
+								<text>{{item.COMMENT_LIKE_CNT}}</text>
+							</view>
+							<view wx:if="{{isLogin && item.COMMENT_USER_ID == nowUserId}}" bindtap="bindCommentDelTap" data-id="{{item._id}}" class="comment-del">删除</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<cmpt-detail mode="mode1" topBtnShow="{{topBtnShow}}" oid="{{job._id}}" type="job" cate="{{job.JOB_CATE_NAME}}" title="{{job.JOB_OBJ.title}}" cover="{{jobCover}}" desc="查看详情" doHome="{{false}}" doFav="{{false}}" doShare="{{false}}" iconOnly="{{true}}">
+		<view class="inline-comment-wrap">
+			<view class="comment-toolbar">
+				<view class="comment-toolbar-left-new">
+					<view class="comment-toolbar-btn" bindtap="bindFavTap">
+						<text class="icon-favor{{job.fav?'fill':''}}" style="{{job.fav?'color:#5b6cff':''}}"></text>
+					</view>
+					<view class="comment-toolbar-btn" bindtap="bindShareTap">
+						<text class="icon-forward"></text>
+					</view>
+					<view class="comment-toolbar-btn" bindtap="bindChooseCommentImage">
+						<text class="icon-pic"></text>
+					</view>
+				</view>
+				<input class="inline-comment-input" placeholder="发言要友善" value="{{commentContent}}" bindinput="bindCommentInput" bindfocus="bindCommentFocus" focus="{{commentFocus}}" confirm-type="send" bindconfirm="bindCommentSubmit" />
+				<view class="inline-comment-send {{(!commentContent && !commentImages.length)||isCommentSubmitting?'disabled':''}}" bindtap="bindCommentSubmit">发送</view>
+			</view>
+			<scroll-view wx:if="{{commentImages.length}}" class="comment-image-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+				<view class="comment-image-preview-list">
+					<view class="comment-image-preview-item" wx:for="{{commentImages}}" wx:key="key">
+						<image class="comment-image-preview" src="{{item}}" mode="aspectFill"></image>
+						<view class="comment-image-remove" bindtap="bindRemoveCommentImage" data-idx="{{index}}">×</view>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+	</cmpt-detail>
+</block>

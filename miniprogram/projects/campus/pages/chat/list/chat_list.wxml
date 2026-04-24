@@ -1,0 +1,26 @@
+<view wx:if="{{!isLoad}}" class="data-loading">
+  <view class="loading-content">加载中...</view>
+</view>
+
+<view wx:elif="{{list.length==0}}" class="data-null">
+  <view class="null-content">暂无会话</view>
+</view>
+
+<view wx:else>
+  <view class="list-item" wx:for="{{list}}" wx:key="_id" bindtap="url" data-id="{{item.CHAT_SESSION_ID}}" data-target="{{item.TARGET_USER_ID}}" data-name="{{item.TARGET_USER_NAME}}">
+    <view class="item-left">
+      <image class="avatar" src="{{item.TARGET_USER_PIC||'/images/anonymous.png'}}" mode="aspectFill"></image>
+      <view wx:if="{{item.CHAT_SESSION_UNREAD>0}}" class="unread-badge">{{item.CHAT_SESSION_UNREAD}}</view>
+    </view>
+    <view class="item-right">
+      <view class="item-top">
+        <text class="name">{{item.TARGET_USER_NAME||'匿名用户'}}</text>
+        <text class="time">{{item.CHAT_SESSION_LAST_TIME}}</text>
+      </view>
+      <view class="item-bottom">
+        <text class="content">{{item.CHAT_SESSION_LAST_CONTENT||'暂无消息'}}</text>
+        <text wx:if="{{item.CHAT_SESSION_SOURCE_TITLE}}" class="source">来自：{{item.CHAT_SESSION_SOURCE_TITLE}}</text>
+      </view>
+    </view>
+  </view>
+</view>
